@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Native Performance"
+  short_description: "Auditoria e correções de performance em React Native"
+  default_prompt: "Use $rn-performance para auditar a performance deste app React Native e priorizar problemas com evidências."

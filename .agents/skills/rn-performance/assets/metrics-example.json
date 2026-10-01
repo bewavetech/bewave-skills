@@ -1,0 +1,24 @@
+{
+  "run": {
+    "artifact": "replace-with-build-or-commit",
+    "trace": "replace-with-local-trace-path"
+  },
+  "context": {
+    "platform": "android",
+    "device": "replace-with-model",
+    "os": "replace-with-version",
+    "build_mode": "release",
+    "scenario": "cold-launch-to-searchable-home",
+    "engine": "replace-with-engine-version",
+    "architecture": "replace-with-architecture",
+    "refresh_hz": 60,
+    "dataset": "replace-with-fixture-and-volume",
+    "network": "replace-with-network-policy",
+    "cache": "replace-with-reset-policy",
+    "start_type": "cold",
+    "instrumentation": "replace-with-tool-version-and-markers"
+  },
+  "metrics": {
+    "tti_ms": {"unit": "ms", "direction": "lower", "samples": []}
+  }
+}
