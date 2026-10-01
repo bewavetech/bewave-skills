@@ -45,7 +45,7 @@ For a whole-project audit, inspect every applicable lane and explicitly mark une
 
 ## 3. Establish evidence and baseline
 
-Read [measurement.md](references/measurement.md). Name a reproducible scenario, primary metric, user impact, and acceptance criteria. Capture raw traces and measurement context. Use development DevTools to locate causes; use release or representative profiling builds to assess user-facing impact and document instrumentation overhead. Never compare debug and release numbers as if they isolate a code change.
+Read [measurement.md](references/measurement.md). Read [profiling-tools.md](references/profiling-tools.md) when selecting profilers, planning capture steps, or interpreting trace exports. Name a reproducible scenario, primary metric, user impact, and acceptance criteria. Capture raw traces and measurement context. Use development DevTools to locate causes; use release or representative profiling builds to assess user-facing impact and document instrumentation overhead. Never compare debug and release numbers as if they isolate a code change.
 
 Distinguish:
 
@@ -71,7 +71,21 @@ Run checks appropriate to the changed behavior (types/lint and existing focused 
 
 ## 6. Verify and close
 
-Repeat the same scenario under comparable conditions. Use scripts/compare_metrics.py when recorded samples fit [metrics-example.json](assets/metrics-example.json):
+Repeat the same scenario under comparable conditions. Use scripts/template_metrics.py to create baseline/candidate JSON templates when the user has scenario context but no measurement file yet:
+
+```bash
+python3 <skill-dir>/scripts/template_metrics.py \
+  --platform android \
+  --device "Pixel 8" \
+  --os "Android 15" \
+  --scenario "cold-launch-to-searchable-home" \
+  --engine "Hermes" \
+  --architecture "new-architecture" \
+  --artifact "build-or-commit" \
+  --metric tti_ms:ms:lower > baseline.json
+```
+
+Use scripts/compare_metrics.py when recorded samples fit [metrics-example.json](assets/metrics-example.json):
 
 ```bash
 python3 <skill-dir>/scripts/compare_metrics.py baseline.json candidate.json

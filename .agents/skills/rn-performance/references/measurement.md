@@ -12,6 +12,8 @@ Guide basis: JS/React profiling pp. 16–24; FPS pp. 25–28; native profiling p
 6. Keep raw samples. Report n, median, p95 method, spread, context, and failures. Nearest-rank p95 with a small sample is often its maximum. Single size measurements can suffice for a deterministic artifact; do not treat one timing as reliable.
 7. Re-run the candidate and, if noise is substantial, interleave baseline/candidate runs or repeat the baseline. Set acceptance based on product needs and variability, not a universal percentage.
 
+For detailed profiler routing and scenario playbooks, read [profiling-tools.md](profiling-tools.md). Use the table below as the short-form measurement map.
+
 ## Select tools by question
 
 | Question | Tool/evidence | Limitation |
@@ -33,6 +35,6 @@ At 60 Hz a frame interval is about 16.67 ms; at 120 Hz about 8.33 ms. This is a 
 
 ## JSON comparison schema
 
-Use assets/metrics-example.json as a schema example; its empty sample arrays are deliberately invalid until populated with real measurements. Put run metadata in run; put every controlled variable affecting comparability in context. Required context: platform, device, os, build_mode, scenario, engine, architecture, refresh_hz, dataset, network, cache, start_type, instrumentation. Use explicit "not-applicable" when appropriate, never omit a required key.
+Use assets/metrics-example.json as a schema example; its empty sample arrays are deliberately invalid until populated with real measurements. When creating a new record, scripts/template_metrics.py can generate the required structure. Put run metadata in run; put every controlled variable affecting comparability in context. Required context: platform, device, os, build_mode, scenario, engine, architecture, refresh_hz, dataset, network, cache, start_type, instrumentation. Use explicit "not-applicable" when appropriate, never omit a required key.
 
 Use the same metric names, unit and direction in each file. Each metric requires nonempty, finite, nonnegative numeric samples; direction is lower or higher. Use separate files for different platforms/scenarios/start types. Store source artifact paths/tool versions in run and context as appropriate. Do not use the comparator output as a universal pass/fail gate.
