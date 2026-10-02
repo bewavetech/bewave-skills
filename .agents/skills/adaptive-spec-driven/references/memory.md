@@ -67,6 +67,8 @@ Triggered by "pause", "stop for today", "end session", or a session that is clea
 
 Triggered by "resume", "continue", "where were we", or a new session on a feature with an active Handoff.
 
+Resume is the counterpart of [status.md](status.md): status only reports drift; resume fixes it in `plan.md` and the Handoff. A request that only asks where things stand ("status", "where are we", "what's next") is Status, and changes nothing.
+
 1. Read `STATE.md` (Decisions, then Handoff) and the feature's `plan.md`.
 2. **Treat the Handoff as a hypothesis.** Reconcile it against evidence:
    - current branch vs. the Handoff branch

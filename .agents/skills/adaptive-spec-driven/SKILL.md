@@ -1,9 +1,9 @@
 ---
 name: adaptive-spec-driven
-description: Risk-adaptive spec-driven development that takes a feature from discovery to verified, committed code. Classifies each change as LOW, MEDIUM, HIGH or CRITICAL from ambiguity, criticality, blast radius, novelty, irreversibility, integrations, state, auth, concurrency, migrations, security and financial/data-integrity impact, then scales the spec, plan, tests, mutation checks and independent verification to that level. Artifacts are spec.md (why + what), plan.md (how + work), and validation.md when risk calls for it. Covers gray-area discussion, research, behavioral tasks with built-in tests, parallel waves, logical commits, spec amendments, sub-agents, STATE.md memory, a lessons layer, pause/resume, deterministic Python gates and blast-radius protection. Use to specify, plan, implement, verify, amend, pause or resume a feature or bug fix. Not for standalone architecture documents.
+description: Risk-adaptive spec-driven development that takes a feature from discovery to verified, committed code. Classifies each change as LOW, MEDIUM, HIGH or CRITICAL from ambiguity, criticality, blast radius, novelty, irreversibility, integrations, state, auth, concurrency, migrations, security and financial/data-integrity impact, then scales the spec, plan, tests, mutation checks and independent verification to that level. Artifacts are spec.md (why + what), plan.md (how + work), and validation.md when risk calls for it. Covers project init (PROJECT.md + ARCHITECTURE.md from the real codebase), a read-only status view, gray-area discussion, research, behavioral tasks with built-in tests, parallel waves, logical commits, spec amendments, sub-agents, STATE.md memory, a lessons layer, pause/resume, deterministic Python gates and blast-radius protection. Use to initialize a project, check status, or specify, plan, implement, verify, amend, pause or resume a feature or bug fix. Not for standalone architecture design work outside init.
 license: CC-BY-4.0
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   derived-from: tlc-spec-driven 3.3.0 by Felipe Rodrigues (github.com/felipfr), CC-BY-4.0
 ---
 
@@ -12,10 +12,14 @@ metadata:
 **Risk determines rigor.** Run the full engineering loop for every change, at the depth its risk warrants. A copy tweak and a payment migration go through the same phases. They differ in how much of each phase runs.
 
 ```
-DISCOVER → SPECIFY → PLAN → EXECUTE → VERIFY
+PROJECT     INIT → project ready (PROJECT.md · ARCHITECTURE.md · STATE.md)
+FEATURE     DISCOVER → SPECIFY → PLAN → EXECUTE → VERIFY
+SESSION     STATUS (read-only) · PAUSE · RESUME
         cross-cutting: DISCUSS · RESEARCH · MEMORY · LESSONS
-                       SPEC AMENDMENTS · SUB-AGENTS · PAUSE/RESUME
+                       SPEC AMENDMENTS · SUB-AGENTS
 ```
+
+Init is project-level and optional: features work without it. Status, pause and resume act on work state.
 
 ## Operating contract
 
@@ -60,7 +64,9 @@ Risk may also be set **per task**. A CRITICAL feature can contain a LOW task (a 
 ## Artifacts and ownership
 
 ```
+ARCHITECTURE.md       # How the system is built (project root; written by init)
 .specs/
+├── PROJECT.md        # What the project is: stack, structure, conventions, quality commands
 ├── STATE.md          # Project decisions (AD-NNN) + Handoff snapshot
 ├── LESSONS.md        # Rendered lessons playbook (script-owned, do not hand-edit)
 ├── lessons.json      # Canonical lessons store (script-owned)
@@ -75,6 +81,8 @@ Create files lazily. A skipped phase leaves no file; an empty file falsely impli
 
 | Fact | Lives only in | Others do |
 | --- | --- | --- |
+| Stack, structure, conventions, quality commands | `.specs/PROJECT.md` | Discover reads it; `plan.md` gates use the real commands |
+| Architecture: services, modules, data flow, persistence, auth, integrations | `ARCHITECTURE.md` | `PROJECT.md` links to it; `plan.md` flags `ARCHITECTURE_UPDATE_REQUIRED` |
 | Risk level and factor ratings | `spec.md` → Risk Assessment | `plan.md` and `validation.md` cite the level |
 | Requirements, ACs, invariants, scope | `spec.md` | `plan.md` references IDs in `Covers` |
 | Spec changes after approval | `spec.md` → Amendments | Tasks reference `A-NN` |
@@ -91,6 +99,7 @@ There is no requirement-status column in `spec.md`. Coverage lives in `plan.md`,
 
 | Phase | Purpose | Reference | Template |
 | --- | --- | --- | --- |
+| Init (project) | Discover the project, write `PROJECT.md`, `ARCHITECTURE.md`, `STATE.md`; idempotent | [init.md](references/init.md) | [PROJECT.md](assets/templates/PROJECT.md), [ARCHITECTURE.md](assets/templates/ARCHITECTURE.md) |
 | Discover | Understand the request and the code, assess blast radius, classify risk | [discover.md](references/discover.md), [risk.md](references/risk.md) | — |
 | Specify | Problem, scope, testable ACs, assumptions | [specify.md](references/specify.md) | [spec.md](assets/templates/spec.md) |
 | ↳ Discuss | Resolve gray areas with the user | [discuss.md](references/discuss.md) | [context.md](assets/templates/context.md) |
@@ -105,7 +114,11 @@ There is no requirement-status column in `spec.md`. Coverage lives in `plan.md`,
 
 **HIGH and CRITICAL tracks.** Follow every phase. Approve the spec before planning and the plan before executing. CRITICAL also approves each irreversible step at the moment it runs.
 
-**Resume.** Read `.specs/STATE.md`, reconcile the Handoff against git and `plan.md`, and propose the next step before editing ([memory.md](references/memory.md)).
+**Status.** Read-only: project, active feature, risk, phase progress, current and next task, blockers, git, drift and the suggested next action. It never edits, commits or fixes stale state ([status.md](references/status.md)).
+
+**Resume.** Read `.specs/STATE.md`, reconcile the Handoff against git and `plan.md`, persist the reconciliation, and propose the next step before editing ([memory.md](references/memory.md)).
+
+**Architecture drift.** When an approved design materially changes the documented architecture (new service, database, layer, external system, auth or data-flow change, module boundary move), `plan.md` records `ARCHITECTURE_UPDATE_REQUIRED` and Verify updates `ARCHITECTURE.md` when the feature passes. Trivial changes do not touch it.
 
 ## Spec amendments
 
@@ -121,6 +134,8 @@ Scripts enforce structure so it does not depend on memory. Run them from the pro
 
 | When | Script | Checks |
 | --- | --- | --- |
+| End of Init | `validate_project.py` | `PROJECT.md`, `STATE.md` and the architecture doc exist; core sections; `PROJECT.md` links the architecture doc; no placeholders |
+| Status | `status.py [feature]` | Read-only: phase progress, current/next task, git state, Handoff drift |
 | End of Discover | `risk.py` | Computes the level from factor ratings and prints the rigor profile |
 | Before presenting a spec | `validate_spec.py <feature>` | Risk sections per level, declared vs. computed risk, AC IDs and testability smells, assumptions closed, amendments well-formed |
 | Before presenting a plan | `validate_plan.py <feature>` | Every AC covered, test origins valid, SPEC tests anchored, invariants tested, dependencies acyclic, waves consistent, required sections per risk |
@@ -141,12 +156,14 @@ Facts you look up; decisions you ask. Resolve anything the codebase, docs or too
 - Respond in the user's language. Follow the project's AGENTS.md / CLAUDE.md and preserve uncommitted work.
 - Do the work instead of narrating the process. Open with a one-line triage (`Risk: HIGH — migration + concurrency → full spec, plan approval, independent verification`), then produce the artifact.
 - Write artifacts in a plain, decided voice: verdict first, definitive decisions, no filler ([execute.md](references/execute.md#writing-voice)).
-- Keep loaded context lean: the active feature's artifacts, never several features' specs at once. Keep `spec.md` under ~4k tokens and `plan.md` under ~8k; past that, split the feature.
+- Keep loaded context lean: the active feature's artifacts, never several features' specs at once. At the start of a feature, `PROJECT.md`, `STATE.md` and the relevant `ARCHITECTURE.md` sections are the initial context; after that, load only the parts a task needs. Keep `spec.md` under ~4k tokens and `plan.md` under ~8k; past that, split the feature.
 
 ## Triggers
 
 | Request | Start at |
 | --- | --- |
+| "Init", "initialize project", "setup adaptive spec", "bootstrap project", "start project" | Init |
+| "Status", "project / feature status", "where are we", "what's next" | Status (read-only) |
 | New feature, change, "build X", "fix Y" | Discover |
 | "Specify", "write requirements" | Specify |
 | "Discuss", "how should this work" | Discuss |

@@ -32,6 +32,10 @@
 | --- | --- | --- |
 | <AREA>-04 | <how> | <what> |
 
+### Architecture impact
+
+**Architecture impact**: none | ARCHITECTURE_UPDATE_REQUIRED — <what changes in ARCHITECTURE.md>
+
 ### Decisions
 
 | Decision | Choice | Rationale |

@@ -37,6 +37,7 @@ Read `spec.md`, and `context.md` if it exists. Re-read `STATE.md` → Decisions;
 - **Alternatives** (HIGH+): 2–3 approaches that deliver the same scope, trade-offs, and a recommendation stated first. At HIGH and CRITICAL, confirm the chosen approach with the user before detailing tasks if it is not obvious.
 - **Failure modes** (CRITICAL): for each external call, write and concurrent path, what happens on timeout, duplicate, partial success and crash mid-way, and which invariant or AC covers it.
 - **Rollback** (any irreversible step): how to undo or compensate, how it was or will be rehearsed, and the point of no return.
+- **Architecture impact:** compare the design with `ARCHITECTURE.md` when it exists. If the approved work materially changes it (a new service, database, architectural layer, external system, auth mechanism, major data-flow change or module-boundary move), write `**Architecture impact**: ARCHITECTURE_UPDATE_REQUIRED — <what changes>` in Design, otherwise `none`. Trivial changes are `none`. The document is updated at Verify, not now.
 - **Decisions:** feature-local decisions go in the Design section. Project-level ones (hard to reverse, surprising without context, a real trade-off) are also appended to `STATE.md` as `AD-NNN`.
 
 Use mermaid diagrams when they save words. Skip them when they do not.

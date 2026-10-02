@@ -36,7 +36,7 @@ On top of HIGH:
 - **Rollback check:** the plan's rollback is still valid for what was actually built.
 - **Human sign-off:** the verdict cannot be final until a person records approval in `validation.md`. Present the summary and ask for it; until then the Sign-off line reads `pending`.
 
-## Verification steps (HIGH and CRITICAL; MEDIUM uses 2, 3 and 5)
+## Verification steps (HIGH and CRITICAL; MEDIUM uses 2, 3, 5 and 10)
 
 1. **Completion.** Every task in `plan.md` is `[x]` or `[-] dropped (A-NN)`; no amendment is `proposed`.
 2. **Gate.** Run the `full` gate, or cite the green full gate at the current `HEAD` SHA if it already ran there. Record passed/failed/skipped. Any skip needs a reason. Compare test counts with the baseline from the start of Execute.
@@ -70,6 +70,7 @@ On top of HIGH:
 
    A non-zero exit means the feature is not done.
 9. **Distill lessons** from every signal ([lessons.md](lessons.md)).
+10. **Architecture update.** On PASS, if `plan.md` records `ARCHITECTURE_UPDATE_REQUIRED`, update the affected sections of `ARCHITECTURE.md` to match what was actually built (not what was planned), and `PROJECT.md` if the stack or external systems changed. Section-scoped edits; commit them as `docs(architecture): …`. No marker, no edit.
 
 ## Verdict and the fix loop
 
