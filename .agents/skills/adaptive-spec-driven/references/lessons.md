@@ -36,7 +36,7 @@ python3 <skill-dir>/scripts/lessons.py add \
 
 `--source` is mandatory: the script refuses ungrounded lessons.
 
-**Phrasing.** Write the general rule, not the incident ("Compare expiry timestamps in UTC", not "the test on line 88 was wrong"). Be terse and canonical: deduplication is exact after normalization, so the same lesson must read the same way to recur and promote. One lesson per signal. Capture **project** lessons about this codebase, never opinions about the method itself.
+**Phrasing.** Write the general rule, not the incident ("Compare expiry timestamps in UTC", not "the test on line 88 was wrong"). Be terse and canonical: deduplication is exact after normalization, so the same lesson must read the same way to recur and promote. One lesson per signal. Capture **project** lessons about this codebase, never opinions about the method itself; those belong to Evolve ([evolve.md](evolve.md#evolutionmd)).
 
 **Self-check.** If verification produced a signal and you recorded nothing, say so in chat and why.
 

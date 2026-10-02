@@ -29,7 +29,7 @@ Install the skill directly from GitHub with the [`skills`](https://www.npmjs.com
 ### Claude Code (all projects)
 
 ```bash
-npx skills add bewavetech/skill-rn-performance --skill rn-performance --agent claude-code --global --yes
+npx skills add bewavetech/bewave-skills --skill rn-performance --agent claude-code --global --yes
 ```
 
 | Flag | Meaning |
@@ -44,7 +44,7 @@ npx skills add bewavetech/skill-rn-performance --skill rn-performance --agent cl
 Run this from the root of the React Native app without `--global`. The skill is installed inside the project, so you can commit it and share it with your team.
 
 ```bash
-npx skills add bewavetech/skill-rn-performance --skill rn-performance --agent claude-code --yes
+npx skills add bewavetech/bewave-skills --skill rn-performance --agent claude-code --yes
 ```
 
 ### Other agents
@@ -52,7 +52,7 @@ npx skills add bewavetech/skill-rn-performance --skill rn-performance --agent cl
 Change the `--agent` value to install for another supported agent, for example Codex:
 
 ```bash
-npx skills add bewavetech/skill-rn-performance --skill rn-performance --agent codex --global --yes
+npx skills add bewavetech/bewave-skills --skill rn-performance --agent codex --global --yes
 ```
 
 ### Updating

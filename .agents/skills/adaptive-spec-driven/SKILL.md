@@ -1,9 +1,9 @@
 ---
 name: adaptive-spec-driven
-description: Risk-adaptive spec-driven development that takes a feature from discovery to verified, committed code. Classifies each change as LOW, MEDIUM, HIGH or CRITICAL from ambiguity, criticality, blast radius, novelty, irreversibility, integrations, state, auth, concurrency, migrations, security and financial/data-integrity impact, then scales the spec, plan, tests, mutation checks and independent verification to that level. Artifacts are spec.md (why + what), plan.md (how + work), and validation.md when risk calls for it. Covers project init (PROJECT.md + ARCHITECTURE.md from the real codebase), a read-only status view, gray-area discussion, research, behavioral tasks with built-in tests, parallel waves, logical commits, spec amendments, sub-agents, STATE.md memory, a lessons layer, pause/resume, deterministic Python gates and blast-radius protection. Use to initialize a project, check status, or specify, plan, implement, verify, amend, pause or resume a feature or bug fix. Not for standalone architecture design work outside init.
+description: Risk-adaptive spec-driven development that takes a feature from discovery to verified, committed code. Classifies each change as LOW, MEDIUM, HIGH or CRITICAL from ambiguity, criticality, blast radius, novelty, irreversibility, integrations, state, auth, concurrency, migrations, security and financial/data-integrity impact, then scales the spec, plan, tests, mutation checks and independent verification to that level. Artifacts are spec.md (why + what), plan.md (how + work), and validation.md when risk calls for it. Covers project init (PROJECT.md + ARCHITECTURE.md from the real codebase), a read-only status view, gray-area discussion, research, behavioral tasks with built-in tests, parallel waves, logical commits, spec amendments, sub-agents, STATE.md memory, a lessons layer, pause/resume, deterministic Python gates and blast-radius protection. Includes user-controlled self-improvement (evolve): proposes evidence-backed changes to the skill itself and applies them only after approval. Use to initialize a project, check status, or specify, plan, implement, verify, amend, pause or resume a feature or bug fix, or to evolve the workflow. Not for standalone architecture design work outside init.
 license: CC-BY-4.0
 metadata:
-  version: 1.1.0
+  version: 1.2.0
   derived-from: tlc-spec-driven 3.3.0 by Felipe Rodrigues (github.com/felipfr), CC-BY-4.0
 ---
 
@@ -15,11 +15,12 @@ metadata:
 PROJECT     INIT → project ready (PROJECT.md · ARCHITECTURE.md · STATE.md)
 FEATURE     DISCOVER → SPECIFY → PLAN → EXECUTE → VERIFY
 SESSION     STATUS (read-only) · PAUSE · RESUME
+SKILL       EVOLVE (analyze → propose → user approval → modify → validate)
         cross-cutting: DISCUSS · RESEARCH · MEMORY · LESSONS
                        SPEC AMENDMENTS · SUB-AGENTS
 ```
 
-Init is project-level and optional: features work without it. Status, pause and resume act on work state.
+Init is project-level and optional: features work without it. Status, pause and resume act on work state. Evolve acts on the skill itself, never on the project.
 
 ## Operating contract
 
@@ -32,6 +33,7 @@ These rules hold even if no reference file is opened.
 5. **Blast radius.** Approval of a spec or plan authorizes local edits and local commits only. `git push`, force-push, deploys, shared or production data changes, and anything irreversible or externally visible need an explicit go-ahead for that specific action.
 6. **The agent owns tool choice.** Pick the MCPs, skills, CLIs and search tools yourself ([research.md](references/research.md)). Ask the user only for credentials, paid or side-effecting services, or genuine product decisions.
 7. **One fact, one home.** Each piece of state lives in exactly one artifact (see the ownership table below). Reference it; never copy it.
+8. **The skill never changes itself.** It may propose improvements to its own workflow, but edits to `<skill-dir>` happen only through Evolve, after the user approves that specific proposal ([evolve.md](references/evolve.md)).
 
 **Loading this skill's files.** `references/`, `assets/` and `scripts/` resolve relative to the directory containing this `SKILL.md` (`<skill-dir>`), never the project root. Read a reference completely before acting on it. Project data lives in the project's `.specs/`.
 
@@ -92,6 +94,7 @@ Create files lazily. A skipped phase leaves no file; an empty file falsely impli
 | Verification evidence and verdict | `validation.md` (or the chat summary below HIGH) | `plan.md` does not repeat it |
 | Project-wide decisions | `STATE.md` → Decisions | `plan.md` cites `AD-NNN` |
 | In-flight session state | `STATE.md` → Handoff | — |
+| Candidate improvements to the skill itself | `<skill-dir>/EVOLUTION.md` (only when one exists) | Never in `.specs/` |
 
 There is no requirement-status column in `spec.md`. Coverage lives in `plan.md`, evidence in `validation.md`.
 
@@ -107,6 +110,7 @@ There is no requirement-status column in `spec.md`. Coverage lives in `plan.md`,
 | Plan | Design plus behavioral tasks with embedded tests and waves | [plan.md](references/plan.md), [testing.md](references/testing.md) | [plan.md](assets/templates/plan.md) |
 | Execute | Implement task by task, gate, commit logical units | [execute.md](references/execute.md) | — |
 | Verify | Risk-scaled evidence that the spec is met | [verify.md](references/verify.md) | [validation.md](assets/templates/validation.md) |
+| Evolve (skill) | Propose and, after approval, apply changes to this skill | [evolve.md](references/evolve.md) | — |
 
 **LOW track (no files).** State the change, its 1–3 ACs and the steps in a short chat block. Add or extend a regression or characterization test where observable behavior changes. Run the gate, re-read the diff, commit. If the inline plan grows past ~5 steps, uncovers a new risk factor, or touches shared contracts, stop and re-classify; LOW was wrong.
 
@@ -117,6 +121,8 @@ There is no requirement-status column in `spec.md`. Coverage lives in `plan.md`,
 **Status.** Read-only: project, active feature, risk, phase progress, current and next task, blockers, git, drift and the suggested next action. It never edits, commits or fixes stale state ([status.md](references/status.md)).
 
 **Resume.** Read `.specs/STATE.md`, reconcile the Handoff against git and `plan.md`, persist the reconciliation, and propose the next step before editing ([memory.md](references/memory.md)).
+
+**Evolve.** Change the skill itself. `evolve: <change>` analyzes an explicit request; bare `evolve` reviews lessons, overrides, amendments, recurring friction and the skill's own consistency, and proposes only evidence-backed improvements. Every proposal shows Problem, Evidence, Proposed change, Files affected and Expected impact; changes to core principles are flagged. Nothing is edited before approval; after editing, links, rules and scripts are re-validated. Candidates without enough evidence may go to `<skill-dir>/EVOLUTION.md`, which is about the skill, unlike `.specs/LESSONS.md`, which is about the project ([evolve.md](references/evolve.md)).
 
 **Architecture drift.** When an approved design materially changes the documented architecture (new service, database, layer, external system, auth or data-flow change, module boundary move), `plan.md` records `ARCHITECTURE_UPDATE_REQUIRED` and Verify updates `ARCHITECTURE.md` when the feature passes. Trivial changes do not touch it.
 
@@ -174,3 +180,4 @@ Facts you look up; decisions you ask. Resolve anything the codebase, docs or too
 | "Record decision", "pause", "resume" | Memory |
 | "What have we learned", "record lesson" | Lessons |
 | "What risk is this", "how rigorous should we be" | Risk |
+| "Evolve", "evolve skill", "improve skill", "update adaptive spec", "change workflow" | Evolve (proposes only; edits after approval) |
