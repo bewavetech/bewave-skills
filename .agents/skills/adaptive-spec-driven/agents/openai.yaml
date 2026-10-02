@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adaptive Spec Driven"
+  short_description: "Spec-driven development com rigor proporcional ao risco"
+  default_prompt: "Use $adaptive-spec-driven para classificar o risco desta mudança, especificar, planejar, implementar e verificar com o rigor adequado."
