@@ -24,15 +24,16 @@ Mark the task `[~] in progress` in `plan.md` (MEDIUM+). This is the only place s
 
 ### 2. Tests first where they come from the spec
 
-Write the task's SPEC, CONTRACT and INVARIANT tests from the spec before implementing, and see them fail for the right reason. Write CHARACTERIZATION tests **before** touching legacy code, and see them pass. Write a bug fix's REGRESSION test first, and see it fail. Rules and depth: [testing.md](testing.md).
+Write the task's SPEC, CONTRACT and INVARIANT tests from the spec before implementing, and see them fail for the right reason (tests that only cover behavior an earlier task already built pass at once; that is fine, say so). Write CHARACTERIZATION tests **before** touching legacy code, and see them pass. Write a bug fix's REGRESSION test first, and see it fail. Rules and depth: [testing.md](testing.md).
 
 ### 3. Implement
 
 Write the minimum code that satisfies the task's ACs and makes its tests pass.
 
-- **Simplicity.** No features beyond the ACs, no abstractions for single use, no configurability nobody asked for, no handling for impossible states.
+- **Simplicity.** Choose the simplest design that passes the tests: plain functions and data before classes, hierarchies, patterns or generics. No abstraction before a second real use (a third for extraction of shared code), no interface with one implementation, no config flags, plugin points, caches or retries nobody asked for, no handling for impossible states. Duplication of two or three lines beats a premature abstraction.
 - **Surgical.** Touch only what the task needs. Match the existing style even where you would choose differently. Do not "improve" adjacent code. Remove only what your own change orphaned.
-- **Reuse.** Extend the components named in the plan before creating new ones.
+- **Reuse.** Extend the components and libraries already in the project before writing new ones or adding dependencies.
+- **Good practices, in proportion.** Intention-revealing names; small, single-purpose functions; early returns over deep nesting; validate at system boundaries (user input, external calls), trust internal code; errors handled where the spec names them, not blanket try/catch; no dead code, commented-out code or stray TODOs; follow the language and framework idioms already in use.
 
 ### 4. Gate
 
@@ -40,17 +41,16 @@ Run the task's gate command from Verification Commands. A non-zero exit means st
 
 ### 5. Review the diff once
 
-One consolidated pass. Do not run a separate quality checklist and adequacy checklist and principles checklist.
+One consolidated pass:
 
-- Adequacy review from [testing.md](testing.md), scaled to the task's risk.
-- Every changed line traces to the task. No drive-by edits.
-- Would a senior reviewer call it overcomplicated? If so, simplify and re-gate.
+- Adequacy review ([testing.md](testing.md)), scaled to the task's risk.
+- Every changed line traces to the task. No drive-by edits. Look for overengineering: an abstraction with one use, an unneeded parameter or layer, speculative generality, code a standard library or existing helper already covers. Remove it, then re-gate.
 - Does reality still match the spec? If not, raise an amendment now ([amendments.md](amendments.md)), not after the commit.
-- MEDIUM+ with non-trivial new branching: run 1–3 discrimination mutations if this task is at least MEDIUM ([testing.md](testing.md#discrimination-mutation-testing)).
+- Task risk MEDIUM+ with non-trivial new branching: run the mutations due ([testing.md](testing.md#discrimination-mutation-testing)).
 
 ### 6. Record and commit
 
-Mark the task `[x] done` in `plan.md` and commit. The status update goes **in the same commit** that completes the task, so a crash between the two can never make resume redo finished work.
+Mark the task `[x] done` in `plan.md` and commit. The status update goes **in the same commit** that completes the task, so a crash between the two can never make resume redo finished work. The SHA is optional; `git log` already has it.
 
 ## Commits are logical units
 
@@ -66,8 +66,7 @@ A commit is one coherent, revertible, green change with an honest message. That 
 
 Rules:
 
-- **Every commit passes at least the quick gate.** The history stays bisectable.
-- **Never mix** refactoring with behavior change, formatting with logic, or unrelated tasks in one commit.
+- **Every commit passes at least the quick gate** (bisectable history). **Never mix** refactoring with behavior change, formatting with logic, or unrelated tasks.
 - **Conventional Commits 1.0.0:** `type(scope): imperative lowercase description`, no trailing period, header ≤ 72 characters. Types: `feat fix refactor perf test docs build ci chore style`. Breaking changes use `!` plus a `BREAKING CHANGE:` footer.
 - Reference task and AC IDs in the body when it helps a reviewer (`Covers CPN-03, CPN-04 (T2)`).
 - Validate: `python3 <skill-dir>/scripts/check_commit.py --message "<msg>"`. It can also be installed as a `commit-msg` hook if the project does not already manage hooks: `ln -sf <skill-dir>/scripts/check_commit.py .git/hooks/commit-msg`.
@@ -97,7 +96,7 @@ Approvals authorize **local** edits and commits only. Stop and get an explicit g
 - sending messages, emails, webhooks or any external side effect
 - deleting branches, files outside the task, or data
 
-At CRITICAL, every irreversible step from the plan's Rollback section is approved individually at the moment it runs, with the rollback restated.
+At CRITICAL, every irreversible step from the plan's Rollback is approved individually when it runs, with the rollback restated.
 
 ## Failure handling
 
@@ -108,14 +107,3 @@ At CRITICAL, every irreversible step from the plan's Rollback section is approve
 ## After the last task
 
 Run the full gate (or cite the last green full gate at the current `HEAD`), then go straight to [verify.md](verify.md). Verification is part of finishing, not a separate request.
-
-## Writing voice
-
-Specs, plans, commit messages, validation reports and chat summaries read like a decided engineer wrote them.
-
-- Lead with the verdict or the change. No warm-up.
-- State decisions definitively ("we use optimistic locking"), not "we might consider".
-- Hedge only real uncertainty, and say what would resolve it.
-- Short sentences; plain verbs ("checked", not "performed a check of").
-- Do not announce phases ("now I will run Execute"). Produce the work.
-- In Portuguese, keep sentences short and avoid long chains of subordinate clauses.

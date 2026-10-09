@@ -105,8 +105,6 @@ def compute_level(ratings):
         return "HIGH", [f"3+ factors medium ({', '.join(meds)})"]
     if meds:
         return "MEDIUM", [f"{f}=medium" for f in meds]
-    if len(lows) >= 3:
-        return "MEDIUM", [f"3+ factors low ({', '.join(lows)})"]
     return "LOW", ["no factor above low" if lows else "no factor applies"]
 
 

@@ -136,8 +136,6 @@ def check(spec, plan, rep):
             rep.error(f"{where}: template placeholders left in the task")
         if status == "invalid":
             rep.error(f"{where}: Status must start with [ ], [~], [x] or [-]")
-        elif status == "done" and not re.search(r"\b[0-9a-f]{7,40}\b", f.get("status", "")):
-            rep.warn(f"{where}: done without a commit SHA in Status")
         elif status == "dropped" and not re.search(r"\bA-\d+\b", f.get("status", "")):
             rep.warn(f"{where}: dropped without the amendment that dropped it")
 
@@ -215,7 +213,8 @@ def check(spec, plan, rep):
                 invariant_tested.update(anchors)
             elif origin == "CONTRACT":
                 contract_seen = True
-        if status != "dropped":
+        fix_task = tid.upper().startswith("F") and bool(tests)
+        if status != "dropped" and not fix_task:
             for i in cov:
                 if i in ac_ids and i not in spec_tested:
                     msg = f"{where}: covers {i} but has no SPEC test citing it"

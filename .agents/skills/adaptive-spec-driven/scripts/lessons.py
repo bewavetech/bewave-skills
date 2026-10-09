@@ -4,10 +4,9 @@ lessons.py - deterministic bookkeeping for the adaptive-spec-driven lessons laye
 
 The agent supplies judgment (which failure, the general rule, its grounding).
 This script owns the mechanics: IDs, recurrence across distinct features,
-candidate -> confirmed promotion, pruning, quarantine and rendering.
+candidate -> confirmed promotion, pruning and quarantine. Markdown rendering is on demand.
 
   .specs/lessons.json   canonical store (machine-owned, never hand-edit)
-  .specs/LESSONS.md     rendered playbook (regenerated on every write)
 
 Commands:
   add       record a grounded lesson from a verification signal
@@ -15,7 +14,8 @@ Commands:
   penalize  mark a confirmed lesson as failed-when-applied (2x -> quarantined)
   prune     drop stale, uncorroborated candidates (also automatic)
   status    print counts
-  init      create an empty store and rendered file
+  init      create an empty store
+  render    print the store as Markdown (--write saves .specs/LESSONS.md)
   selftest  run normalization regressions
 
 Run with cwd at the project root, or pass --root.
@@ -83,7 +83,6 @@ def save(root, data):
     with open(os.path.join(root, STORE), "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
         f.write("\n")
-    render(root, data)
 
 
 def prune(data):
@@ -96,11 +95,11 @@ def prune(data):
     return [l["id"] for l in dropped]
 
 
-def render(root, data):
+def render(data):
     out = [
         "# LESSONS",
         "",
-        "> Rendered by `scripts/lessons.py`. Do not edit; changes are overwritten. Canonical state: `.specs/lessons.json`.",
+        "> Rendered by `scripts/lessons.py render`. Do not edit; canonical state: `.specs/lessons.json`.",
         f"> promote after {data['promote_threshold']} distinct features · candidates expire after "
         f"{data['window_days']} days · quarantine after {data['quarantine_threshold']} penalties",
         "",
@@ -124,8 +123,7 @@ def render(root, data):
             if ev:
                 out.append(f"- evidence: {ev[-1]}" + (f" (+{len(ev) - 1} more)" if len(ev) > 1 else ""))
             out.append("")
-    with open(os.path.join(root, RENDER), "w", encoding="utf-8") as f:
-        f.write("\n".join(out).rstrip() + "\n")
+    return "\n".join(out).rstrip() + "\n"
 
 
 def cmd_add(root, a):
@@ -220,6 +218,17 @@ def cmd_init(root, a):
     return 0
 
 
+def cmd_render(root, a):
+    text = render(load(root))
+    if a.write:
+        with open(os.path.join(root, RENDER), "w", encoding="utf-8") as f:
+            f.write(text)
+        print(f"wrote {os.path.join(root, RENDER)}")
+    else:
+        print(text, end="")
+    return 0
+
+
 def cmd_selftest(root, a):
     checks = [
         (norm("Não use datas locais") == norm("Nao use datas locais") == "nao use datas locais", "pt diacritics"),
@@ -261,6 +270,10 @@ def main(argv=None):
     s = sub.add_parser("penalize")
     s.add_argument("--id", required=True)
     s.set_defaults(fn=cmd_penalize)
+
+    s = sub.add_parser("render")
+    s.add_argument("--write", action="store_true", help="save to .specs/LESSONS.md instead of printing")
+    s.set_defaults(fn=cmd_render)
 
     for name, fn in (("prune", cmd_prune), ("status", cmd_status), ("init", cmd_init), ("selftest", cmd_selftest)):
         sub.add_parser(name).set_defaults(fn=fn)

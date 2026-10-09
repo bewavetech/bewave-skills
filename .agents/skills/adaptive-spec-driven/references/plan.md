@@ -25,12 +25,12 @@ LOW has no `plan.md`; its plan is an inline list of steps in chat.
 
 ### 1. Load context
 
-Read `spec.md`, and `context.md` if it exists. Re-read `STATE.md` → Decisions; conform to every active `AD-NNN` or supersede it explicitly (see [memory.md](memory.md)). Load confirmed lessons for the area (MEDIUM+).
+Read `spec.md`, and `context.md` if it exists. Re-read `STATE.md` → Decisions; conform to every active `AD-NNN` or supersede it explicitly (see [memory.md](memory.md)). Load confirmed lessons for the area (MEDIUM+). Tests in the plan follow `.specs/TESTING.md` when it exists.
 
 ### 2. Design
 
 - **Approach:** the shape of the solution in plain words, and what it reuses.
-- **Reuse first.** Name the existing components, utilities and patterns being extended, with paths. A new abstraction needs a reason the existing ones do not fit.
+- **Reuse first.** Name the existing components, utilities and patterns being extended, with paths. A new abstraction, layer or dependency needs a reason the existing ones do not fit; the default design is the simplest one that meets the ACs.
 - **Components and interfaces** (HIGH+): purpose, location, signatures, dependencies. Interfaces before internals.
 - **Data model** (when data changes): fields, constraints, indexes, migration shape (additive → backfill → switch → cleanup).
 - **Error handling:** one row per failure the spec names, with what the user or caller sees.
@@ -82,7 +82,7 @@ A behavioral task usually cuts vertically through layers (schema → domain → 
 
 - `Risk`: `inherit`, or a level plus reason (`HIGH — backfill on orders table`).
 - `Touches`: the expected surface. It is what parallel safety is judged on, not a fence: if the real diff must go elsewhere, update the line and re-check the wave.
-- `Status`: `[ ] pending`, `[~] in progress`, `[x] done (<sha>)`, or `[-] dropped (A-NN)`.
+- `Status`: `[ ] pending`, `[~] in progress`, `[x] done` (a SHA may be added later; a commit cannot contain its own), or `[-] dropped (A-NN)`.
 
 ### 4. Order work into waves
 
@@ -113,9 +113,11 @@ Define each gate once, from the project's real commands found during Discover. T
 | `full` | Whole test suite + lint + typecheck + build | After each wave, and once before Verify |
 | extra (optional) | e2e, contract or mutation tooling | Named where a task or Verify needs it |
 
+**One command?** If the project has a single test command, `quick` and `full` are the same; list it once.
+
 **Consolidate.** If lint, typecheck and tests are one script in the project (`npm run check`, `make ci`), use it. Do not list three commands that CI already runs as one. Do not rerun the full gate during Verify if `HEAD` has not changed since the last green full gate; cite the SHA instead.
 
-If the project has no tests at all, ask once which test types and runner to adopt, or propose one that matches the stack. This is the one tooling question that is the user's call, because it adds a dependency.
+If the project has no tests at all, ask once which test types and runner to adopt, or propose one that matches the stack. This is the one tooling question that is the user's call, because it adds a dependency. Once decided, create `.specs/TESTING.md` ([template](../assets/templates/TESTING.md)) with the chosen stack and layout, and add the commands to `PROJECT.md` → Quality.
 
 ### 6. Validate and present
 
@@ -132,13 +134,4 @@ Present:
 
 Approval of the plan authorizes local implementation and local commits. Nothing remote ([SKILL.md](../SKILL.md), contract rule 5).
 
-## Anti-patterns
-
-| Anti-pattern | Why it fails |
-| --- | --- |
-| A task per file or layer | Nothing observable is true until the last one; tests become a separate afterthought |
-| A "write tests" task at the end | Tests written after the fact mirror the implementation |
-| A task with no test and no reason | Its done-claim is unverifiable |
-| Copying AC text into tasks | Two homes for one fact; reference the ID instead |
-| Asking the user which tools to use | The agent owns tool choice |
-| Waves with overlapping `Touches` | Parallel workers conflict and the merge silently breaks one of them |
+**Avoid:** a task per file or layer; a trailing "write tests" task; a task with no test and no reason; copying AC text into tasks (reference the ID); waves with overlapping `Touches`; asking the user which tools to use.

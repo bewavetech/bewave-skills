@@ -21,7 +21,7 @@ Rate each factor `none`, `low`, `medium` or `high` for **this change**, not for 
 | `security` | Security | No untrusted input reaches the change | Untrusted input parsed or rendered; secrets referenced | Crypto, secret handling, injection surfaces, PII exposure, sandbox boundaries |
 | `data_integrity` | Financial / data integrity | Derived or cosmetic data | Business records that can be corrected by hand | Money, balances, ledgers, inventory, medical/legal records, system of record |
 
-`none` means the factor does not apply. Prefer `none` over `low` when the change truly does not touch the dimension.
+`none` means the factor does not apply. Prefer `none` over `low` when the change truly does not touch the dimension. Display-only formatting of money or data (nothing computed, stored or sent) is `low` for `data_integrity`, not `medium`. Unrated factors count as `none`, so list only the ones that apply.
 
 ## Computing the level
 
@@ -34,8 +34,7 @@ HIGH      if any factor is high
           or any of {irreversibility, auth, security, data_integrity, migrations, concurrency} is medium
           or 3+ factors are medium
 MEDIUM    if any factor is medium
-          or 3+ factors are low
-LOW       otherwise
+LOW       otherwise (any number of low factors)
 ```
 
 Usage:
@@ -48,7 +47,7 @@ python3 <skill-dir>/scripts/risk.py --profile HIGH                              
 
 ## Declared vs. computed
 
-The spec records both. **Raising** the declared level above the computed one needs no justification: the user or the agent may simply want more assurance. **Lowering** it needs an `Override:` line explaining why the triggering factor does not carry its usual weight here (for example, "migration is additive on an empty table created in this same feature"). `validate_spec.py` fails a lowered level without an override line, and warns when the override is shorter than a real sentence.
+The spec records both. **Raising** the declared level above the computed one needs no justification: the user or the agent may simply want more assurance. **Lowering** it needs an `Override:` line explaining why the triggering factor does not carry its usual weight here (for example, "migration is additive on an empty table created in this same feature"). `validate_spec.py` fails a lowered level without an override line, and warns when the override is shorter than a real sentence. At LOW there is no spec, so state the override in the one-line triage in chat.
 
 When in doubt between two levels, choose the higher one. The cost of extra rigor is minutes; the cost of under-verification on a critical path is an incident.
 
@@ -72,11 +71,4 @@ Risk is re-evaluated, not set once. Re-run the classification when:
 
 When the level rises mid-flight, apply the new profile to all remaining work, and **backfill** what completed work now lacks: missing test origins, discrimination, the verification tier. Do not re-do work that already meets the new bar. When the level falls, keep the artifacts already written; do not delete them to match.
 
-## Rigor profile reference
-
-The profile table in `SKILL.md` is authoritative. In short:
-
-- **LOW** buys speed. The safety net is the existing test suite plus a targeted regression test, and reversibility.
-- **MEDIUM** buys traceability. Every AC has an ID, a task and a SPEC test, and the author re-reads the spec against the diff.
-- **HIGH** buys independence. Someone other than the author proves the tests discriminate and the ACs hold.
-- **CRITICAL** buys assurance. Invariants are stated and tested as properties, failure modes and rollback are designed up front, irreversible steps are approved individually, and a human signs off.
+The rigor profile per level is the table in [SKILL.md](../SKILL.md).

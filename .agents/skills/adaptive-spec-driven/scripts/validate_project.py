@@ -13,6 +13,8 @@ structure only; it never judges whether the architecture is right.
   WARN   PROJECT.md without ## Stack or ## Quality
   WARN   a relative link in PROJECT.md that does not resolve
   WARN   ARCHITECTURE.md has Planned Architecture but no Current Architecture
+  WARN   .specs/TESTING.md missing (new projects without a test stack are exempt)
+  ERROR  template placeholders (<...>) left in TESTING.md
   WARN   lessons store not initialized
 
 The architecture document is ARCHITECTURE.md at the project root, or another
@@ -124,6 +126,13 @@ def main(argv=None):
         for name in ("Decisions", "Handoff"):
             if _sdd.find_section(slines, name) is None:
                 rep.error(f"STATE.md has no ## {name}")
+
+    testing = os.path.join(specs, "TESTING.md")
+    if not os.path.isfile(testing):
+        rep.warn(".specs/TESTING.md is missing; run init (new projects with no test stack yet may ignore this)")
+    else:
+        for ln, ph in placeholders(testing):
+            rep.error(f"TESTING.md:{ln} template placeholder {ph}")
 
     if not os.path.isfile(os.path.join(specs, "lessons.json")):
         rep.warn("lessons store not initialized; run lessons.py init")

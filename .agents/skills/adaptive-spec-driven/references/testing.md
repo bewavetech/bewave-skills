@@ -42,7 +42,7 @@ Scaled to risk. LOW does the first item only.
 2. **Precise.** Each SPEC assertion targets the spec-defined value (the exact status, field value, message or state), not merely that something was returned.
 3. **Non-shallow.** Reject assertion-free tests, tautologies, "did not throw" as the only check (unless not throwing is the spec), and mock-call counts where the spec demands a resulting state. For every field the spec names in a returned object, event or record, assert that field's value. The litmus test: would this assertion still pass under a plausible wrong implementation? If yes, strengthen it.
 4. **Necessary.** Every new test maps back to an anchor. Remove the ones that do not.
-5. **Conventions.** Location, naming and framework follow the project's guidelines or existing tests.
+5. **Conventions.** Location, naming, layer, fixtures and doubles follow `.specs/TESTING.md` (or the area's existing tests when absent).
 
 Record the result as one line in the commit body or the task status when it is noteworthy. HIGH and CRITICAL put the full evidence table in `validation.md`. Do not keep a second copy per task.
 
@@ -51,18 +51,14 @@ Record the result as one line in the commit body or the task status when it is n
 - Never weaken an assertion to make it pass.
 - Never delete, skip, `.only`, `xit` or otherwise disable a test to get green.
 - A test that is genuinely wrong per the spec is fixed openly: say so, cite the AC, and change it in its own visible step. If the spec itself was wrong, that is an amendment.
+- A signature or contract change the spec mandates may force edits to existing tests: update them mechanically in the same task, cite the AC or amendment, and keep every assertion's meaning.
 - The test count per affected suite never silently drops. A drop needs a stated reason.
 
 ## Discrimination (mutation) testing
 
 Coverage shows that code ran. Discrimination shows the tests would notice if it were wrong. Inject a behavior-level fault and confirm a test fails ("the mutant is killed").
 
-| Level | Depth | Who |
-| --- | --- | --- |
-| LOW | None | — |
-| MEDIUM | 1–3 targeted mutations on the new decision logic, when the task adds non-trivial branching | Author, during the fresh-eyes pass |
-| HIGH | 3–5 mutations across the riskiest new code: conditions, returned values, required side effects | Independent verifier |
-| CRITICAL | Language mutation tooling scoped to the diff (Stryker, mutmut, cargo-mutants, PIT, …) when available; otherwise at least 5 manual mutations covering every branch of invariant-bearing code. Zero survivors. | Independent verifier |
+Depth and who runs it per level: the Discrimination row in [SKILL.md](../SKILL.md). At CRITICAL use language mutation tooling scoped to the diff (Stryker, mutmut, cargo-mutants, PIT, …) when available; otherwise ≥5 manual mutations covering every branch of invariant-bearing code.
 
 Good mutations: flip a condition (`>` → `>=`), return a wrong but plausible value, drop a required side effect (the event emit, the audit write), skip an idempotency check, swap the order of two writes.
 

@@ -47,25 +47,8 @@ For plans with many sequential tasks (more than ~8), a worker can take a batch o
 
 ## Verifier
 
-**Author ≠ verifier.** The value of the verifier comes from not inheriting the author's assumptions. Its payload is deliberately narrow: spec, diff, tests, commands, checklist. It does not receive the plan's reasoning, the chat history or the author's adequacy notes.
-
-The verifier:
-
-1. Follows [verify.md](verify.md) steps 1–6 (and 7 when UAT is due, coordinated through the orchestrator, since only the orchestrator talks to the user).
-2. Runs mutations only in an isolated scratch and confirms the real tree's porcelain is unchanged afterwards.
-3. Writes `validation.md` and returns the compact verdict with ranked gaps.
-4. Never fixes code or tests. Gaps go back to the orchestrator as fix tasks.
-
-The fix → re-verify loop is capped at three rounds; each round dispatches a fresh verifier.
+**Author ≠ verifier.** Its value comes from not inheriting the author's assumptions, so its payload is deliberately narrow: spec, diff, tests, commands, checklist; never the plan's reasoning, chat history or adequacy notes. Procedure and CRITICAL extras: [verify.md](verify.md), [verify-high.md](verify-high.md). It follows verify steps 1–6, runs mutations only in an isolated scratch and confirms the real tree's porcelain is unchanged, writes `validation.md`, returns a compact verdict with ranked gaps, and never fixes code or tests. Each fix → re-verify round (max three) dispatches a fresh verifier.
 
 ## Model tier (only if the harness lets you choose per agent)
 
-Spend reasoning where ambiguity and consequence are high.
-
-| Work | Tier |
-| --- | --- |
-| Plan design at HIGH/CRITICAL, workers on core-domain or ambiguous tasks | High-reasoning |
-| Verifier, adversarial reviewer | Mid-to-high; never the cheapest. A weak verifier defeats the point |
-| Workers on mechanical tasks (wiring, config, CRUD on a settled pattern), explorers | Faster / cheaper |
-
-When unsure, size up. This is advisory; no gate depends on it.
+High-reasoning for HIGH/CRITICAL plan design and workers on core or ambiguous tasks. Mid-to-high for verifier and adversarial reviewer; never the cheapest, since a weak verifier defeats the point. Faster/cheaper for mechanical workers (wiring, config, CRUD on a settled pattern) and explorers. When unsure, size up. Advisory only; no gate depends on it.

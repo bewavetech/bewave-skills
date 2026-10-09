@@ -57,5 +57,6 @@ Delete sections that do not apply. Write `Unknown` only where the gap matters.
 ## References
 
 - [ARCHITECTURE.md](../ARCHITECTURE.md): architecture, modules, data flow
+- [TESTING.md](TESTING.md): test stack, layout, layers, fixtures, standards
 - [STATE.md](STATE.md): project decisions (AD-NNN) and current handoff
 - <Other important project docs>

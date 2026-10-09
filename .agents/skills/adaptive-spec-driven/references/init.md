@@ -1,6 +1,6 @@
 # Init
 
-**Goal:** prepare a project for Adaptive Spec Driven by writing down what the project is (`.specs/PROJECT.md`), how it is built (`ARCHITECTURE.md`), and an empty work state (`.specs/STATE.md`). Init is project-level; it never starts a feature.
+**Goal:** prepare a project for Adaptive Spec Driven by writing down what the project is (`.specs/PROJECT.md`), how it is built (`ARCHITECTURE.md`), how it tests (`.specs/TESTING.md`), and an empty work state (`.specs/STATE.md`). Init is project-level; it never starts a feature.
 
 Triggered by "init", "init project", "initialize project", "setup adaptive spec", "bootstrap project", "start project", "initialize adaptive spec".
 
@@ -12,6 +12,7 @@ Triggered by "init", "init project", "initialize project", "setup adaptive spec"
 | --- | --- | --- |
 | `.specs/PROJECT.md` | What the project is: overview, goals, stack, structure, conventions, quality commands, external systems, constraints | [PROJECT.md](../assets/templates/PROJECT.md) |
 | `ARCHITECTURE.md` (project root) | How the system is built: services, modules, data flow, persistence, auth, integrations, cross-cutting concerns | [ARCHITECTURE.md](../assets/templates/ARCHITECTURE.md) |
+| `.specs/TESTING.md` | How the project tests: runners, layout and naming, layers, fixtures and doubles, standards, known gaps. Commands stay in `PROJECT.md` | [TESTING.md](../assets/templates/TESTING.md) |
 | `.specs/STATE.md` | Where the work is: decisions and handoff | [STATE.md](../assets/templates/STATE.md) |
 
 `PROJECT.md` links to `ARCHITECTURE.md` and never repeats its detail. Neither of them holds in-flight work.
@@ -41,7 +42,7 @@ Read what exists, proportionally. Use explorer sub-agents for large monorepos ([
 | Structure | Top-level and source directories; workspace config (`pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, Cargo/Go workspaces) |
 | Architecture | Entry points, routing/navigation, state management, API layer, module boundaries, DI, layering |
 | Quality commands | Scripts in manifests, `Makefile`, task runners, CI workflows. Copy the real commands; never invent them |
-| Test setup | Test config files, test directories, layers in use |
+| Test setup (feeds `TESTING.md`) | Test configs, test directories and naming, layers in use, fixtures/factories/mocks, coverage thresholds, CI test steps, `.only`/skip usage; read 2–3 representative tests for style |
 | Lint / format | ESLint, Prettier, Biome, Ruff, golangci, EditorConfig |
 | CI/CD and deployment | `.github/workflows`, GitLab CI, EAS, Fastlane, Dockerfiles, IaC |
 | Environment | `.env.example`, config modules. Never read or copy secret values |
@@ -91,7 +92,7 @@ Never present planned architecture as current. When code later implements it, mo
 
 ## 4. Write the files
 
-For each file, in this order: `ARCHITECTURE.md`, `.specs/PROJECT.md`, `.specs/STATE.md`.
+For each file, in this order: `ARCHITECTURE.md`, `.specs/PROJECT.md`, `.specs/TESTING.md`, `.specs/STATE.md`.
 
 | File state | Action |
 | --- | --- |
@@ -99,6 +100,8 @@ For each file, in this order: `ARCHITECTURE.md`, `.specs/PROJECT.md`, `.specs/ST
 | Present | Read it and use it as a context source. Do **not** overwrite. Compare it with the repository (step 5) |
 
 `ARCHITECTURE.md` may also exist under another name (`docs/architecture.md`, ADRs). If so, do not create a duplicate root file: reference the existing document from `PROJECT.md` → References and say so in the summary.
+
+**`TESTING.md`** records only observed conventions, each traceable to a config or existing test. A new project with no test stack decided gets no `TESTING.md`; Plan creates it when a runner is adopted ([plan.md](plan.md#5-verification-commands)). An existing project with no tests gets one with only `Known Gaps` and the decision pending.
 
 **`STATE.md`** keeps its two-section format ([memory.md](memory.md)). A fresh one gets an empty `## Decisions` and this Handoff:
 
@@ -138,7 +141,7 @@ Report material drift as a short list and propose the specific section edits. Ap
 python3 <skill-dir>/scripts/validate_project.py
 ```
 
-It checks structure only: the three files exist, `PROJECT.md` has its core sections and links to the architecture document, `STATE.md` has both headers, no template placeholders remain. It does not judge the architecture. Fix every ERROR.
+It checks structure only: `PROJECT.md`, the architecture document and `STATE.md` exist (`TESTING.md` is a warning if absent), `PROJECT.md` has its core sections and links to the architecture document, `STATE.md` has both headers, no template placeholders remain. It does not judge the architecture. Fix every ERROR.
 
 ## 7. Report
 
@@ -156,8 +159,9 @@ Existing
 
 Created
 ✓ .specs/PROJECT.md
+✓ .specs/TESTING.md
 ✓ .specs/STATE.md
-✓ .specs/lessons.json, .specs/LESSONS.md
+✓ .specs/lessons.json
 
 Drift
 ! README describes Redux; code uses Zustand (recorded in PROJECT.md)

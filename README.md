@@ -54,7 +54,6 @@ Run it from the root of any project.
 /adaptive-spec-driven add CSV export to the reports page
 /adaptive-spec-driven status                   # read-only progress and next step
 /adaptive-spec-driven pause | resume
-/adaptive-spec-driven evolve                   # proposes changes to the skill; applies only after approval
 ```
 
 For each change it runs discover → specify → plan → execute → verify. LOW-risk work stays inline in the chat; higher risk produces `spec.md`, `plan.md`, and `validation.md` under `.specs/features/<feature>/` and asks for approval before building. Approval covers local edits and commits only; push, deploy, and other irreversible actions always need explicit confirmation.

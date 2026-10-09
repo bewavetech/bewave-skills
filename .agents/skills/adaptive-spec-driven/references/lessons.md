@@ -2,12 +2,12 @@
 
 **Goal:** turn real verification failures into project-local guidance that changes future behavior, without the file rotting into a log nobody trusts.
 
-**Division of labor.** The agent supplies judgment: which failure happened, how to phrase the general rule, what grounds it. `scripts/lessons.py` owns the bookkeeping: IDs, recurrence across distinct features, promotion, pruning, quarantine and rendering. Hand-kept bookkeeping is what rots, so do not do it by hand.
+**Division of labor.** The agent supplies judgment: which failure happened, how to phrase the general rule, what grounds it. `scripts/lessons.py` owns the bookkeeping: IDs, recurrence across distinct features, promotion, pruning and quarantine. Hand-kept bookkeeping is what rots, so do not do it by hand.
 
 | File | Owner | Purpose |
 | --- | --- | --- |
 | `.specs/lessons.json` | script | Canonical store. Never hand-edit. |
-| `.specs/LESSONS.md` | script (rendered) | Readable playbook. Read it; never edit it. |
+| `.specs/LESSONS.md` | script (optional, on demand) | Human-readable view from `lessons.py render --write`. Never edit it; not created by default. |
 
 Statuses: `candidate` (seen once, tracked but not trusted), `confirmed` (recurred in ≥2 distinct features; this is what gets loaded), `quarantined` (failed when applied; ignored).
 
@@ -36,7 +36,7 @@ python3 <skill-dir>/scripts/lessons.py add \
 
 `--source` is mandatory: the script refuses ungrounded lessons.
 
-**Phrasing.** Write the general rule, not the incident ("Compare expiry timestamps in UTC", not "the test on line 88 was wrong"). Be terse and canonical: deduplication is exact after normalization, so the same lesson must read the same way to recur and promote. One lesson per signal. Capture **project** lessons about this codebase, never opinions about the method itself; those belong to Evolve ([evolve.md](evolve.md#evolutionmd)).
+**Phrasing.** Write the general rule, not the incident ("Compare expiry timestamps in UTC", not "the test on line 88 was wrong"). Be terse and canonical: deduplication is exact after normalization, so the same lesson must read the same way to recur and promote. One lesson per signal. Capture **project** lessons about this codebase, never opinions about the method itself.
 
 **Self-check.** If verification produced a signal and you recorded nothing, say so in chat and why.
 
@@ -56,12 +56,12 @@ Apply what comes back as guidance while specifying and planning. A lesson about 
 
 ## Other commands
 
-`lessons.py status` (counts), `lessons.py prune` (drop stale uncorroborated candidates; also runs automatically), `lessons.py init`, `lessons.py selftest`.
+`lessons.py render` (print Markdown; `--write` saves `.specs/LESSONS.md` for humans), `lessons.py status` (counts), `lessons.py prune` (drop stale uncorroborated candidates; also runs automatically), `lessons.py init`, `lessons.py selftest`.
 
 ## Without code execution
 
-Maintain `.specs/LESSONS.md` by hand with the same rules (grounded only, promote after two distinct features). Say once that bookkeeping is best-effort in this mode.
+Maintain a hand-written `.specs/LESSONS.md` with the same rules (grounded only, promote after two distinct features). Say once that bookkeeping is best-effort in this mode.
 
 ## Disable
 
-Delete `.specs/lessons.json` and `.specs/LESSONS.md` and skip the read and write steps. Nothing else depends on them.
+Delete `.specs/lessons.json` (and `.specs/LESSONS.md` if rendered) and skip the read and write steps. Nothing else depends on them.

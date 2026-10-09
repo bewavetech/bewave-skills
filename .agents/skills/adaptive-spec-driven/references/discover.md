@@ -7,6 +7,7 @@
 ### 1. Load memory
 
 - If `.specs/PROJECT.md` exists, read it for the stack, real quality commands and conventions; do not rediscover what it already states, but trust the code where they disagree. If `ARCHITECTURE.md` exists, read only the sections for the affected area. Missing project files never block Discover ([init.md](init.md)).
+- If `.specs/TESTING.md` exists, read it: new tests follow its layout, layers, fixtures and standards. Otherwise infer them from the area's existing tests.
 - If `.specs/STATE.md` exists, read `## Decisions`. Active `AD-NNN` entries constrain this work.
 - If the request continues earlier work, follow Resume in [memory.md](memory.md) instead.
 - For anything that may land at MEDIUM or above, load confirmed lessons for the area:
